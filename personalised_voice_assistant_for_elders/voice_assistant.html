@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Elderly Voice Assistant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f8ff;
+      padding: 40px;
+    }
+    h1 {
+      font-size: 2em;
+    }
+    button {
+      font-size: 1.5em;
+      padding: 15px 30px;
+      margin: 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    #response {
+      font-size: 1.5em;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hello! I'm your assistant.</h1>
+  <button onclick="startListening()">Talk to Me</button>
+  <div id="response"></div>
+
+  <script>
+    const responseDiv = document.getElementById("response");
+
+    const synth = window.speechSynthesis;
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    function speak(text) {
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 1;
+      synth.speak(utter);
+    }
+
+    function startListening() {
+      speak("I'm listening. Please speak.");
+      recognition.start();
+    }
+
+    recognition.onresult = function(event) {
+      const transcript = event.results[0][0].transcript.toLowerCase();
+      responseDiv.textContent = `You said: "${transcript}"`;
+
+      // Basic command logic
+      if (transcript.includes("time")) {
+        const now = new Date();
+        const time = now.toLocaleTimeString();
+        speak("The time is " + time);
+      } else if (transcript.includes("hello")) {
+        speak("Hello! How can I help you today?");
+      } else if (transcript.includes("weather")) {
+        speak("I can't check the weather now, but I hope it's sunny!");
+      } else {
+        speak("I'm sorry, I didn't understand that.");
+      }
+    };
+
+    recognition.onerror = function(event) {
+      speak("Sorry, I couldn't hear you clearly. Please try again.");
+    };
+  </script>
+</body>
+</html>
